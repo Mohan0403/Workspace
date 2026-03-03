@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-if (!import.meta.env.DEV && !import.meta.env.VITE_API_URL) {
-  throw new Error('Missing VITE_API_URL. Set it in Vercel project environment variables.');
-}
-
 const API_URL = import.meta.env.VITE_API_URL || '/api';
+
+if (!import.meta.env.VITE_API_URL) {
+  console.warn('VITE_API_URL is not set. Falling back to /api. Set VITE_API_URL in Vercel for production.');
+}
 
 const api = axios.create({
   baseURL: API_URL,
