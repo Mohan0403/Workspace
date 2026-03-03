@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-dark: #070816;
+    --bg-panel: rgba(15, 17, 36, 0.72);
+    --accent: #7c3aed;
+    --accent-glow: #8b5cf6;
+    --text-primary: #e7e9ff;
+    --border-light: rgba(255,255,255,0.1);
+  }
+
+  body {
+    @apply text-gray-100 antialiased font-sans;
+    background: radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.18), transparent 30%),
+      radial-gradient(circle at 90% 0%, rgba(59, 130, 246, 0.12), transparent 28%),
+      #070816;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body.light-theme {
+    background: radial-gradient(circle at 12% 12%, rgba(168, 85, 247, 0.15), transparent 30%),
+      #f6f7ff;
+    color: #111827;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+    box-shadow: 0 10px 28px -18px rgba(124, 58, 237, 0.55);
+  }
+  
+  .neumorph-card {
+    @apply shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_10px_20px_-5px_rgba(0,0,0,0.5)] bg-[#1a1a24] rounded-xl;
+  }
+}
+
+body.light-theme .glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(17, 24, 39, 0.12);
+  color: #111827;
+  box-shadow: 0 10px 24px -18px rgba(17, 24, 39, 0.35);
+}
+
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select {
+  color: #111827;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(17, 24, 39, 0.12);
+}
+
+body.light-theme .text-gray-400,
+body.light-theme .text-gray-300,
+body.light-theme .text-gray-500 {
+  color: #4b5563 !important;
+}
+
+body.light-theme .bg-white\/5 {
+  background-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-theme .border-white\/10 {
+  border-color: rgba(17, 24, 39, 0.12) !important;
+}
