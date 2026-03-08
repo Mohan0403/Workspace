@@ -23,6 +23,25 @@ const MemberList = () => {
     e.preventDefault();
     if (!inviteEmails || !currentWorkspace?._id) return;
 
+    const enteredEmails = `${inviteEmails || ''}`
+      .split(/[\n,;]+/)
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (!enteredEmails.length) {
+      setInviteError('Enter at least one valid email address.');
+      return;
+    }
+
+    const memberEmailSet = new Set((members || []).map((item) => `${item?.user?.email || ''}`.trim().toLowerCase()));
+    const alreadyInWorkspace = enteredEmails.filter((email) => memberEmailSet.has(email));
+
+    if (alreadyInWorkspace.length === enteredEmails.length) {
+      setInviteError('That email is already in this workspace. No new invite email was sent.');
+      setInviteResults(alreadyInWorkspace.map((email) => ({ email, status: 'already-member' })));
+      return;
+    }
+
     try {
       setInviteLoading(true);
       setInviteError('');
@@ -43,7 +62,7 @@ const MemberList = () => {
           setInviteError('Some emails could not be delivered. Check SMTP settings.');
         }
       } else if (firstResult?.status === 'already-member') {
-        setInviteError(result?.message || 'User is already a member');
+        setInviteError(result?.message || 'User is already a member. No invite email was sent.');
       } else if (firstResult?.status === 'invited' || firstResult?.status === 'pending-registration') {
         setInviteSuccess(result?.message || 'Invitation processed successfully');
         if (!result?.emailSent) {
