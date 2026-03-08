@@ -1,8 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Upload, File, Folder, Download, Trash2 } from 'lucide-react';
+import { Upload, File, Download, Trash2 } from 'lucide-react';
 import * as fileService from '../../services/fileService';
+
+const getUploadErrorMessage = (err) => {
+  const status = err.response?.status;
+  const serverMessage = err.response?.data?.message;
+  const rawMessage = (serverMessage || err.message || '').toLowerCase();
+
+  if (
+    status === 503 ||
+    /cloudinary|must supply api_key|must supply api_secret|must supply cloud_name|upload is not configured/.test(rawMessage)
+  ) {
+    return 'File upload is not configured on the server yet. Ask admin to set CLOUDINARY_CLOUD_NAME (or CLOUDINARY_NAME), CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in server/.env, then restart backend.';
+  }
+
+  return serverMessage || 'Failed to upload file';
+};
 
 const FileStorage = ({ module }) => {
   const { workspaceId } = useParams();
@@ -15,30 +30,61 @@ const FileStorage = ({ module }) => {
     loadFiles();
   }, [workspaceId]);
 
-  const loadFiles = async () => {
+  const loadFiles = async ({ preserveExistingOnEmpty = false } = {}) => {
     try {
       setError('');
       const { data } = await fileService.getFiles(workspaceId);
-      setFiles(data);
+      const nextFiles = Array.isArray(data) ? data : [];
+      setFiles((prevFiles) => {
+        if (preserveExistingOnEmpty && prevFiles.length > 0 && nextFiles.length === 0) {
+          return prevFiles;
+        }
+        return nextFiles;
+      });
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load files');
     }
   };
 
   const handleUpload = async (e) => {
-    const file = e.target.files[0];
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
+
+    setError('');
     setUploading(true);
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('workspace', workspaceId);
+
     try {
-      await fileService.uploadFile(formData);
-      loadFiles();
+      const { data: uploadedFile } = await fileService.uploadFile(formData);
+
+      // Keep the new file visible even if the immediate refetch is briefly stale.
+      setFiles((prevFiles) => {
+        const exists = prevFiles.some((existingFile) => existingFile._id === uploadedFile?._id);
+        if (exists) return prevFiles;
+
+        return [
+          {
+            ...uploadedFile,
+            uploadedBy: uploadedFile?.uploadedBy || {
+              _id: user?._id,
+              name: user?.name,
+            },
+          },
+          ...prevFiles,
+        ];
+      });
+
+      await loadFiles({ preserveExistingOnEmpty: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to upload file');
+      setError(getUploadErrorMessage(err));
     } finally {
       setUploading(false);
+      // Allow selecting the same file again after a failed/successful upload.
+      input.value = '';
     }
   };
 
@@ -50,6 +96,25 @@ const FileStorage = ({ module }) => {
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to delete file');
       }
+    }
+  };
+
+  const handleDownload = async (file) => {
+    try {
+      const response = await fetch(file.url);
+      if (!response.ok) throw new Error('Download failed');
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = objectUrl;
+      anchor.download = file.name || 'download';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      setError('Failed to download file. Please try again.');
     }
   };
 
@@ -83,9 +148,14 @@ const FileStorage = ({ module }) => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <a href={file.url} target="_blank" rel="noreferrer" className="p-1 hover:bg-white/10 rounded">
+              <button
+                type="button"
+                onClick={() => handleDownload(file)}
+                className="p-1 hover:bg-white/10 rounded"
+                aria-label={`Download ${file.name}`}
+              >
                 <Download size={18} />
-              </a>
+              </button>
               {file.uploadedBy?._id === user?._id && (
                 <button onClick={() => handleDelete(file._id)} className="p-1 hover:bg-white/10 rounded text-red-400">
                   <Trash2 size={18} />

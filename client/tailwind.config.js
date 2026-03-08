@@ -7,11 +7,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
-        accent: '#7c3aed',
-        'accent-glow': '#8b5cf6',
+        accent: '#0ea5a4',
+        'accent-glow': '#14b8a6',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',

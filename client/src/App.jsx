@@ -6,8 +6,8 @@ import Dashboard from './pages/Dashboard';
 import Workspace from './pages/Workspace';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/protectedRoute';
-import Layout from './layouts/Layout';
-import CommandPalette from './layouts/CommandPalette';
+import Layout from './components/layout/Layout';
+import CommandPalette from './components/layout/CommandPalette';
 import { useSocket } from './hooks/useSocket';
 import { useAuth } from './hooks/useAuth';
 

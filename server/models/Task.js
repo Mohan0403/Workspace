@@ -13,6 +13,8 @@ const taskSchema = new mongoose.Schema({
   dueDate: Date,
   position: { type: Number, default: 0 },
   assignees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  overdueReminderSentAt: Date,
+  overdueReminderSentTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   labels: [String],
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now },

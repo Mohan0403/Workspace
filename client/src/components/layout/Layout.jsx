@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 const Layout = () => {
   return (
-    <div className="flex h-screen bg-[#0a0a0f]">
+    <div className="app-shell flex h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <TopBar />
@@ -13,7 +13,7 @@ const Layout = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="flex-1 overflow-y-auto p-6"
+          className="app-content flex-1 overflow-y-auto p-6"
         >
           <Outlet />
         </motion.main>

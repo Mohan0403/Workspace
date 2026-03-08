@@ -27,7 +27,7 @@ const Sidebar = () => {
       className="glass-panel h-full flex flex-col border-r border-white/10 transition-all duration-300"
     >
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        {!collapsed && <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">NexusBoard</span>}
+        {!collapsed && <span className="text-xl font-bold bg-gradient-to-r from-cyan-300 via-teal-300 to-amber-200 bg-clip-text text-transparent">NexusBoard</span>}
         <button onClick={toggleSidebar} className="p-1 rounded-lg hover:bg-white/10">
           {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
         </button>

@@ -1,10 +1,9 @@
 import File from '../models/File.js';
 import Activity from '../models/Activity.js';
-import cloudinary from '../config/cloudinary.js';
+import cloudinary, { ensureCloudinaryConfigured } from '../config/cloudinary.js';
 import multer from 'multer';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
-// Multer config (memory storage)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -18,11 +17,16 @@ const hasWriteRole = (user, workspaceId) => {
   );
 };
 
-// @desc    Upload a file
-// @route   POST /api/files/upload
+
 export const uploadFile = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    if (!ensureCloudinaryConfigured()) {
+      return res.status(503).json({
+        message: 'File upload is not configured on the server. Set CLOUDINARY_CLOUD_NAME (or CLOUDINARY_NAME), CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in server/.env and restart the server.'
+      });
+    }
 
     const { workspace, folder = '/' } = req.body;
 
@@ -34,7 +38,7 @@ export const uploadFile = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to upload files in this workspace' });
     }
 
-    const result = await uploadToCloudinary(req.file.buffer, `workspace_${workspace}`);
+    const result = await uploadToCloudinary(req.file.buffer, `workspace_${workspace}`, req.file.mimetype);
 
     const file = await File.create({
       workspace,
@@ -57,6 +61,12 @@ export const uploadFile = async (req, res) => {
 
     res.status(201).json(file);
   } catch (error) {
+    if (/must supply api_key|must supply api_secret|must supply cloud_name/i.test(error.message || '')) {
+      return res.status(503).json({
+        message: 'Cloudinary credentials are missing or invalid. Check CLOUDINARY_* values in server/.env and restart the server.'
+      });
+    }
+
     res.status(500).json({ message: error.message });
   }
 };

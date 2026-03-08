@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,53 +6,178 @@
 
 @layer base {
   :root {
-    --bg-dark: #070816;
-    --bg-panel: rgba(15, 17, 36, 0.72);
-    --accent: #7c3aed;
-    --accent-glow: #8b5cf6;
-    --text-primary: #e7e9ff;
-    --border-light: rgba(255,255,255,0.1);
+    --bg-dark: #081423;
+    --bg-panel: rgba(10, 27, 43, 0.72);
+    --accent: #0ea5a4;
+    --accent-glow: #14b8a6;
+    --text-primary: #e7f7ff;
+    --border-light: rgba(226, 232, 240, 0.16);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(20, 184, 166, 0.55) rgba(255, 255, 255, 0.07);
+  }
+
+  *::selection {
+    background: rgba(20, 184, 166, 0.33);
+    color: #f8fafc;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
   }
 
   body {
-    @apply text-gray-100 antialiased font-sans;
-    background: radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.18), transparent 30%),
-      radial-gradient(circle at 90% 0%, rgba(59, 130, 246, 0.12), transparent 28%),
-      #070816;
+    @apply text-slate-100 antialiased font-sans;
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    background:
+      radial-gradient(circle at 12% 14%, rgba(20, 184, 166, 0.18), transparent 34%),
+      radial-gradient(circle at 88% 10%, rgba(251, 146, 60, 0.16), transparent 30%),
+      linear-gradient(140deg, #081423 0%, #10243a 42%, #182b42 100%);
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+      repeating-linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0.03) 0,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 26px
+      );
+    opacity: 0.18;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    width: min(42vw, 420px);
+    aspect-ratio: 1;
+    top: -140px;
+    right: -120px;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(circle at 30% 30%, rgba(20, 184, 166, 0.35), rgba(20, 184, 166, 0));
+    filter: blur(8px);
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+
+  h1,
+  h2,
+  h3,
+  .brand-display {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  #root {
+    position: relative;
+    z-index: 0;
+  }
+
+  .app-shell {
+    background: transparent;
+  }
+
+  .app-content {
+    color: var(--text-primary);
   }
 
   body.light-theme {
-    background: radial-gradient(circle at 12% 12%, rgba(168, 85, 247, 0.15), transparent 30%),
-      #f6f7ff;
-    color: #111827;
+    color: #0f172a;
+    background:
+      radial-gradient(circle at 12% 10%, rgba(20, 184, 166, 0.13), transparent 36%),
+      radial-gradient(circle at 88% 0%, rgba(245, 158, 11, 0.12), transparent 28%),
+      linear-gradient(160deg, #ecfeff 0%, #f8fafc 55%, #fefce8 100%);
+  }
+
+  body.light-theme::before {
+    opacity: 0.08;
+  }
+
+  body.light-theme::after {
+    background: radial-gradient(circle at 30% 30%, rgba(251, 146, 60, 0.22), rgba(251, 146, 60, 0));
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
-    box-shadow: 0 10px 28px -18px rgba(124, 58, 237, 0.55);
+    @apply rounded-2xl border backdrop-blur-xl;
+    background: linear-gradient(160deg, rgba(6, 27, 43, 0.82), rgba(17, 38, 58, 0.66));
+    border-color: rgba(148, 163, 184, 0.22);
+    box-shadow:
+      0 18px 40px -30px rgba(15, 23, 42, 0.9),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
-  
+
   .neumorph-card {
-    @apply shadow-[inset_0_1px_2px_rgba(255,255,255,0.05),0_10px_20px_-5px_rgba(0,0,0,0.5)] bg-[#1a1a24] rounded-xl;
+    @apply rounded-xl;
+    background: linear-gradient(155deg, #0d2236, #0f2a41);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.08),
+      0 10px 24px -10px rgba(2, 6, 23, 0.75);
   }
 }
 
 body.light-theme .glass-panel {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(17, 24, 39, 0.12);
-  color: #111827;
-  box-shadow: 0 10px 24px -18px rgba(17, 24, 39, 0.35);
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.85), rgba(240, 249, 255, 0.78));
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+  box-shadow: 0 12px 24px -20px rgba(15, 23, 42, 0.34);
+}
+
+body.light-theme .app-shell {
+  background: linear-gradient(170deg, rgba(236, 254, 255, 0.45), rgba(255, 255, 255, 0.75));
+}
+
+body.light-theme .app-content {
+  color: #0f172a;
+}
+
+body.light-theme .ui-btn-secondary {
+  color: #0f172a;
+  background: rgba(15, 23, 42, 0.06);
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+body.light-theme .ui-btn-secondary:hover {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+body.light-theme .ui-btn-ghost {
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .ui-btn-ghost:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .ui-btn-primary {
+  color: #f8fafc;
+  box-shadow: 0 10px 20px -16px rgba(13, 148, 136, 0.9);
 }
 
 body.light-theme input,
 body.light-theme textarea,
 body.light-theme select {
-  color: #111827;
+  color: #0f172a;
   background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(17, 24, 39, 0.12);
+  border-color: rgba(15, 23, 42, 0.12);
 }
 
 body.light-theme .text-gray-400,
@@ -66,5 +191,14 @@ body.light-theme .bg-white\/5 {
 }
 
 body.light-theme .border-white\/10 {
-  border-color: rgba(17, 24, 39, 0.12) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+@keyframes drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-30px, 26px) scale(1.08);
+  }
 }

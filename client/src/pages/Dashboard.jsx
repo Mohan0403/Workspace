@@ -10,15 +10,24 @@ import Skeleton from '../components/ui/Skeleton';
 const Dashboard = () => {
   const { workspaces, fetchWorkspaces, createNewWorkspace } = useWorkspace();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newWorkspace, setNewWorkspace] = useState({ name: '', description: '' });
 
-  useEffect(() => {
-    const load = async () => {
+  const loadWorkspaces = async () => {
+    try {
+      setLoading(true);
+      setError('');
       await fetchWorkspaces();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load workspaces. Please try again.');
+    } finally {
       setLoading(false);
-    };
-    load();
+    }
+  };
+
+  useEffect(() => {
+    loadWorkspaces();
   }, []);
 
   const handleCreate = async (e) => {
@@ -28,7 +37,7 @@ const Dashboard = () => {
       await createNewWorkspace(newWorkspace);
       setShowCreateModal(false);
       setNewWorkspace({ name: '', description: '' });
-      await fetchWorkspaces();
+      await loadWorkspaces();
     } catch (error) {
       alert('Failed to create workspace: ' + (error.response?.data?.message || error.message));
     }
@@ -40,6 +49,17 @@ const Dashboard = () => {
         {[1, 2, 3].map(i => (
           <Skeleton key={i} className="h-40 w-full" />
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full rounded-lg border border-red-500/40 bg-red-500/10 p-5 text-red-300">
+        <p>{error}</p>
+        <Button className="mt-3" onClick={loadWorkspaces}>
+          Retry
+        </Button>
       </div>
     );
   }

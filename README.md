@@ -1,13 +1,13 @@
 # NexusBoard - Project Navigation
 
-## 📚 Documentation (Read These First)
+## Documentation (Read These First)
 
 1. **[QUICK_START.md](./QUICK_START.md)** - 3-step setup + 5-minute demo
 2. **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Full architecture + API reference
 3. **[COMPLETION_CHECKLIST.md](./COMPLETION_CHECKLIST.md)** - Feature checklist + deployment guide
 4. **[FINAL_REPORT.md](./FINAL_REPORT.md)** - Executive summary + technical details
 
-## 🚀 Quick Commands
+##  Quick Commands
 
 ```bash
 # STEP 1: Whitelist IP at https://account.mongodb.com → Network Access → Add IP
@@ -21,7 +21,7 @@ cd client && npm run dev --port 5175
 # Open browser to http://localhost:5175
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 full_stack_project/
@@ -50,7 +50,7 @@ full_stack_project/
     └── package.json
 ```
 
-## ✅ What's Implemented (10 Core Flows)
+##  What's Implemented (10 Core Flows)
 
 - [x] **Authentication** - Register, login, JWT tokens, session persistence
 - [x] **Workspaces** - Create, invite members, assign roles (owner/admin/member/viewer)
@@ -63,7 +63,7 @@ full_stack_project/
 - [x] **Dashboard & UI** - SaaS layout, dark theme, responsive, loading states
 - [x] **Real-Time Updates** - Socket.io broadcasts (messages, tasks, status)
 
-## 🔗 Key Endpoints
+##  Key Endpoints
 
 ### Auth
 - `POST /api/auth/register` - Create account
@@ -121,7 +121,7 @@ socket.on('task-changed', task => {...})
 socket.on('user-status', {userId, status})
 ```
 
-## 🔐 Security Features
+##  Security Features
 
 ✅ JWT authentication with bcrypt hashing
 ✅ Role-based access control (RBAC) on all endpoints
@@ -130,7 +130,7 @@ socket.on('user-status', {userId, status})
 ✅ Socket.io JWT authentication
 ✅ Error middleware with proper status codes
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -140,7 +140,7 @@ socket.on('user-status', {userId, status})
 | Drag-drop not working | Clear browser cache; check console for React errors |
 | File upload failing | Add Cloudinary credentials to `.env` (optional for demo) |
 
-## 📝 Environment Variables
+##  Environment Variables
 
 Located in `.env` (pre-configured):
 
@@ -160,18 +160,19 @@ Frontend (`client`) for Vercel:
 ```bash
 # Required for production frontend deployment
 VITE_API_URL=https://your-backend-name.onrender.com/api
+VITE_SOCKET_URL=https://your-backend-name.onrender.com
 ```
 
 For local development, `client/src/services/api.js` uses `VITE_API_URL` and falls back to `/api` so Vite proxy still works.
 
-## 🌐 Browser Compatibility
+##  Browser Compatibility
 
 - ✅ Chrome/Edge 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Mobile browsers (iOS Safari, Chrome Mobile)
 
-## 📊 Tech Stack Summary
+##  Tech Stack Summary
 
 **Backend:**
 - Node.js + Express.js (API server)
@@ -188,7 +189,7 @@ For local development, `client/src/services/api.js` uses `VITE_API_URL` and fall
 - React Router (navigation)
 - React Beautiful DnD (drag-drop)
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Whitelist your MongoDB IP** (1 minute)
    - https://account.mongodb.com/account/login
@@ -201,9 +202,53 @@ For local development, `client/src/services/api.js` uses `VITE_API_URL` and fall
 3. **Test flows** (5 minutes)
    - Register → Login → Create workspace → Create tasks → Send messages
 
-4. **Deploy** (See IMPLEMENTATION_GUIDE.md)
+4. **Deploy** (See section below)
 
-## 📞 Support
+## Deploy (Render + Vercel)
+
+### 1. Deploy Backend on Render
+
+Use the included `render.yaml` from repo root.
+
+1. Push this repo to GitHub.
+2. In Render: **New** -> **Blueprint** -> connect the repo.
+3. Render will create service `nexusboard-backend` with root `server/`.
+4. In Render service settings, add real values for these env vars:
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `CLIENT_URL` (your Vercel frontend URL)
+   - `CLIENT_URLS` (optional comma-separated extra frontend URLs)
+   - `CLOUDINARY_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`
+   - Optional: `OVERDUE_TASK_EMAIL_INTERVAL_MINUTES` (default `10`)
+5. Deploy and confirm health check:
+   - `https://your-backend-name.onrender.com/health`
+
+### 2. Deploy Frontend on Vercel
+
+`client/vercel.json` is included to rewrite all routes to `index.html` (React Router support).
+
+1. In Vercel: **New Project** -> import the same repo.
+2. Set **Root Directory** to `client`.
+3. Framework preset: **Vite**.
+4. Add env vars in Vercel project:
+   - `VITE_API_URL=https://your-backend-name.onrender.com/api`
+   - `VITE_SOCKET_URL=https://your-backend-name.onrender.com`
+5. Deploy.
+
+### 3. Final Wiring
+
+1. Copy Vercel production URL.
+2. Update Render `CLIENT_URL` with that exact URL.
+3. Redeploy Render once.
+4. Test production flows:
+   - Auth login/register
+   - Workspace access
+   - Realtime chat and kanban
+   - File upload/download
+   - Overdue email reminders
+
+##  Support
 
 - For setup issues: See QUICK_START.md
 - For architecture questions: See IMPLEMENTATION_GUIDE.md
@@ -212,9 +257,9 @@ For local development, `client/src/services/api.js` uses `VITE_API_URL` and fall
 
 ---
 
-**Status: ✅ COMPLETE & READY TO RUN**
+**Status:  COMPLETE & READY TO RUN**
 
 All 10 system flows implemented, tested, and documented.
 Only requirement: Whitelist MongoDB IP (1-click fix).
 
-Enjoy your new SaaS platform! 🚀
+Enjoy your new SaaS platform! 

@@ -13,29 +13,51 @@ const columns = [
   { id: 'done', title: 'Done' },
 ];
 
+const getNextColumn = (columnId) => {
+  const currentIndex = columns.findIndex((column) => column.id === columnId);
+  if (currentIndex === -1 || currentIndex >= columns.length - 1) {
+    return null;
+  }
+
+  return columns[currentIndex + 1].id;
+};
+
 const KanbanBoard = ({ module }) => {
   const { workspaceId } = useParams();
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.modules.tasks);
+  const { currentWorkspace } = useSelector((state) => state.workspace);
+  const { user } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const currentRole = user?.workspaces?.find(
+    (membership) => membership.workspace?.toString() === workspaceId?.toString()
+  )?.role;
+  const canAssign = ['owner', 'admin'].includes(currentRole);
+
+  const workspaceMembers = (currentWorkspace?.members || [])
+    .map((item) => item.user)
+    .filter(Boolean);
   const workspaceTasks = tasks.filter((task) => {
     const taskWorkspaceId = task.workspace?._id || task.workspace;
     return taskWorkspaceId?.toString() === workspaceId.toString();
   });
 
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const { data } = await taskService.getTasks(workspaceId);
+      dispatch(setTasks(data));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setError('');
-        const { data } = await taskService.getTasks(workspaceId);
-        dispatch(setTasks(data));
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load tasks');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchTasks();
   }, [workspaceId, dispatch]);
 
@@ -63,13 +85,49 @@ const KanbanBoard = ({ module }) => {
     const title = window.prompt('Task title');
     if (!title?.trim()) return;
 
+    let dueDate;
+    let assignees = [];
+
+    if (canAssign) {
+      const dueDateInput = window.prompt('Due date (YYYY-MM-DD). Leave blank for no due date.', '');
+      if (dueDateInput && dueDateInput.trim()) {
+        const parsedDueDate = new Date(dueDateInput.trim());
+        if (Number.isNaN(parsedDueDate.getTime())) {
+          setError('Invalid due date format. Use YYYY-MM-DD.');
+          return;
+        }
+        dueDate = parsedDueDate.toISOString();
+      }
+
+      if (workspaceMembers.length > 0) {
+        const options = workspaceMembers
+          .map((member, index) => `${index + 1}. ${member.name} (${member.email})`)
+          .join('\n');
+        const selected = window.prompt(
+          `Assign members by number (comma separated). Leave blank for unassigned.\n\n${options}`,
+          ''
+        );
+
+        if (selected && selected.trim()) {
+          const selectedIndexes = selected
+            .split(',')
+            .map((item) => Number(item.trim()) - 1)
+            .filter((index) => Number.isInteger(index) && index >= 0 && index < workspaceMembers.length);
+
+          assignees = [...new Set(selectedIndexes)].map((index) => workspaceMembers[index]._id);
+        }
+      }
+    }
+
     const position = workspaceTasks.filter((task) => task.column === columnId).length;
     try {
       const { data } = await taskService.createTask({
         workspace: workspaceId,
         title: title.trim(),
         column: columnId,
-        position
+        dueDate,
+        assignees,
+        position,
       });
       dispatch(addTask(data));
     } catch (err) {
@@ -77,8 +135,40 @@ const KanbanBoard = ({ module }) => {
     }
   };
 
+  const handleMoveToNextColumn = async (task) => {
+    const nextColumn = getNextColumn(task.column);
+    if (!nextColumn) return;
+
+    const nextPosition = workspaceTasks.filter((item) => item.column === nextColumn).length;
+    const updatedTask = { ...task, column: nextColumn, position: nextPosition };
+
+    dispatch(updateTask(updatedTask));
+
+    try {
+      await taskService.updateTask(task._id, {
+        column: nextColumn,
+        position: nextPosition,
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update task status');
+    }
+  };
+
   if (loading) return <div className="p-4">Loading tasks...</div>;
-  if (error) return <div className="p-4 text-red-400">{error}</div>;
+  if (error) {
+    return (
+      <div className="p-4 text-red-400">
+        <p>{error}</p>
+        <button
+          type="button"
+          onClick={fetchTasks}
+          className="mt-2 rounded border border-white/20 px-3 py-1 text-sm text-gray-200 hover:bg-white/5"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel p-4">
@@ -110,6 +200,11 @@ const KanbanBoard = ({ module }) => {
                             className="bg-white/10 rounded p-3 mb-2"
                           >
                             <p className="font-medium">{task.title}</p>
+                            {task.assignees?.length > 0 && (
+                              <p className="mt-1 text-xs text-cyan-200/90">
+                                Assigned: {task.assignees.map((assignee) => assignee?.name || 'Member').join(', ')}
+                              </p>
+                            )}
                             <div className="flex items-center mt-2 text-xs">
                               <span className={`px-2 py-1 rounded ${task.priority === 'high' ? 'bg-red-500/20 text-red-300' : task.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-500/20 text-green-300'}`}>
                                 {task.priority}
@@ -120,6 +215,15 @@ const KanbanBoard = ({ module }) => {
                                 </span>
                               )}
                             </div>
+                            {task.column !== 'done' && (
+                              <button
+                                type="button"
+                                onClick={() => handleMoveToNextColumn(task)}
+                                className="mt-3 rounded border border-emerald-400/40 bg-emerald-500/10 px-2 py-1 text-xs text-emerald-200 hover:bg-emerald-500/20"
+                              >
+                                Complete
+                              </button>
+                            )}
                           </div>
                         )}
                       </Draggable>

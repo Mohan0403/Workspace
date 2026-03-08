@@ -8,8 +8,7 @@ const SharedNotes = ({ module }) => {
   const [lastSaved, setLastSaved] = useState(null);
 
   useEffect(() => {
-    // Load initial notes from API (you'd have a notes endpoint)
-    // For demo, we'll use localStorage or a simple fetch
+
     const saved = localStorage.getItem(`notes-${workspaceId}`);
     if (saved) setContent(saved);
 
@@ -27,10 +26,9 @@ const SharedNotes = ({ module }) => {
 
   const handleChange = (e) => {
     setContent(e.target.value);
-    // Debounce save
     clearTimeout(window.notesTimer);
     window.notesTimer = setTimeout(() => {
-      // Save to API and emit via socket
+      
       localStorage.setItem(`notes-${workspaceId}`, e.target.value);
       getSocket().emit('update-notes', { workspaceId, content: e.target.value });
       setLastSaved(new Date().toLocaleTimeString());

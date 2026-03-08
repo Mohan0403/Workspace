@@ -5,7 +5,7 @@ const Button = ({ children, variant = 'primary', size = 'md', onClick, disabled,
   const base = 'inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/70 disabled:opacity-60 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-accent hover:bg-accent-glow text-white shadow-lg shadow-indigo-500/20',
+    primary: 'bg-accent hover:bg-accent-glow text-white shadow-lg shadow-cyan-900/25',
     secondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/10',
     ghost: 'hover:bg-white/10 text-white border border-transparent',
     danger: 'bg-red-500/20 hover:bg-red-500/30 text-red-300',
@@ -20,7 +20,7 @@ const Button = ({ children, variant = 'primary', size = 'md', onClick, disabled,
   return (
     <motion.button
       whileTap={{ scale: 0.95 }}
-      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`ui-btn ui-btn-${variant} ${base} ${variants[variant]} ${sizes[size]} ${className}`}
       onClick={onClick}
       disabled={disabled}
       {...props}

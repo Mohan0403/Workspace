@@ -30,7 +30,7 @@ Server running on port 5001
 MongoDB Connected: nexusboardcluster-...
 ```
 
-✅ Backend is ready when you see both lines above.
+ Backend is ready when you see both lines above.
 
 ---
 
@@ -51,7 +51,7 @@ VITE v4.5.14  ready in 358 ms
 ➜  Network: use --host to expose
 ```
 
-✅ Frontend is ready. Open http://localhost:5173 in your browser.
+Frontend is ready. Open http://localhost:5173 in your browser.
 
 ---
 
@@ -153,7 +153,7 @@ Change `CLIENT_URL` if frontend runs on different port (e.g., 5174/5175).
 
 ## What's Built?
 
-✅ **10 Complete Flows**
+ **10 Complete Flows**
 1. JWT Authentication (register/login)
 2. Multi-workspace system (create/invite/manage)
 3. Dynamic modules (Kanban/Chat/Files/Timeline/Notes)
@@ -165,12 +165,12 @@ Change `CLIENT_URL` if frontend runs on different port (e.g., 5174/5175).
 9. Socket.io realtime (workspace broadcasts)
 10. Dark-theme SaaS UI (responsive/mobile-ready)
 
-✅ **Tech Stack**
+ **Tech Stack**
 - Backend: Node.js, Express, MongoDB, Socket.io, JWT, bcrypt, Cloudinary
 - Frontend: React, Vite, Redux, Tailwind CSS, Socket.io-client
 - UI: Responsive, dark theme, drag-drop, animations
 
-✅ **Security**
+ **Security**
 - JWT tokens with bcrypt hashing
 - Role-based access (owner/admin/member/viewer)
 - Workspace isolation + membership checks
@@ -187,4 +187,4 @@ Change `CLIENT_URL` if frontend runs on different port (e.g., 5174/5175).
 
 ---
 
-**You're all set! Enjoy NexusBoard!** 🚀
+**You're all set! Enjoy NexusBoard!**

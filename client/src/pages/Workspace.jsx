@@ -145,7 +145,7 @@ const Workspace = () => {
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                             {...dragProvided.dragHandleProps}
-                            className={`cursor-pointer rounded-[0.6rem] border px-3.5 py-2 text-sm capitalize transition ${selectedModuleType === module.moduleType ? 'border-indigo-400/60 bg-indigo-500/35' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}
+                            className={`cursor-pointer rounded-[0.6rem] border px-3.5 py-2 text-sm capitalize transition ${selectedModuleType === module.moduleType ? 'border-accent/70 bg-accent/30 text-white' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}
                             onClick={() => setSearchParams({ module: module.moduleType })}
                             role="button"
                             tabIndex={0}
