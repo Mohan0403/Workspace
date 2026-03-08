@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Moon, Sun, User } from 'lucide-react';
+import { Search, Moon, Sun, User, Menu } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 import NotificationBell from '../notifications/NotificationBell';
 import PreviousButton from '../ui/PreviousButton';
 
-const TopBar = () => {
+const TopBar = ({ onOpenSidebar = () => {} }) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -22,10 +22,20 @@ const TopBar = () => {
   };
 
   return (
-    <header className="glass-panel h-16 border-b border-white/10 flex items-center justify-between px-6">
-      <div className="flex items-center flex-1">
-        <PreviousButton className="mr-3" />
-        <div className="relative w-96">
+    <header className="glass-panel h-16 border-b border-white/10 flex items-center justify-between px-3 sm:px-4 lg:px-6">
+      <div className="flex min-w-0 items-center flex-1 gap-2">
+        <button
+          type="button"
+          className="inline-flex rounded-lg p-2 hover:bg-white/10 lg:hidden"
+          onClick={onOpenSidebar}
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+
+        <PreviousButton className="mr-1 hidden sm:inline-flex" />
+
+        <div className="relative hidden w-full max-w-xl md:block">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
@@ -36,7 +46,7 @@ const TopBar = () => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
         <NotificationBell />
         <button
           className="p-2 rounded-lg hover:bg-white/10"

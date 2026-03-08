@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, LayoutGrid, Settings, FileText, MessageSquare, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutGrid, Settings, FileText, MessageSquare, Clock, X } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen = false, onClose = () => {} }) => {
   const [collapsed, setCollapsed] = useState(false);
   const { workspaces, currentWorkspace } = useSelector((state) => state.workspace);
   const { user } = useSelector((state) => state.auth);
@@ -21,15 +20,16 @@ const Sidebar = () => {
   };
 
   return (
-    <motion.aside
-      initial={false}
-      animate={{ width: collapsed ? 80 : 256 }}
-      className="glass-panel h-full flex flex-col border-r border-white/10 transition-all duration-300"
+    <aside
+      className={`glass-panel fixed inset-y-0 left-0 z-40 flex h-full w-72 flex-col border-r border-white/10 transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${collapsed ? 'lg:w-20' : 'lg:w-64'}`}
     >
       <div className="flex items-center justify-between p-4 border-b border-white/10">
         {!collapsed && <span className="text-xl font-bold bg-gradient-to-r from-cyan-300 via-teal-300 to-amber-200 bg-clip-text text-transparent">NexusBoard</span>}
-        <button onClick={toggleSidebar} className="p-1 rounded-lg hover:bg-white/10">
+        <button type="button" onClick={toggleSidebar} className="hidden p-1 rounded-lg hover:bg-white/10 lg:inline-flex">
           {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        </button>
+        <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 lg:hidden" aria-label="Close menu">
+          <X size={18} />
         </button>
       </div>
 
@@ -39,6 +39,7 @@ const Sidebar = () => {
           <NavLink
             key={workspace._id}
             to={`/workspace/${workspace._id}`}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center px-4 py-2 mx-2 rounded-lg transition-colors ${isActive ? 'bg-accent/20 text-accent-glow' : 'hover:bg-white/10'}`
             }
@@ -64,6 +65,7 @@ const Sidebar = () => {
                 <NavLink
                   key={module._id}
                   to={`/workspace/${currentWorkspace._id}?module=${module.moduleType}`}
+                  onClick={onClose}
                   className={`flex items-center px-4 py-2 mx-2 rounded-lg transition-colors ${isActiveModule ? 'bg-accent/20 text-accent-glow' : 'hover:bg-white/10'}`}
                 >
                   <Icon size={18} />
@@ -76,7 +78,7 @@ const Sidebar = () => {
       </div>
 
       <div className="border-t border-white/10 p-4">
-        <NavLink to="/settings" className="flex items-center px-2 py-2 rounded-lg hover:bg-white/10">
+        <NavLink to="/settings" onClick={onClose} className="flex items-center px-2 py-2 rounded-lg hover:bg-white/10">
           <Settings size={18} />
           {!collapsed && <span className="ml-3">Settings</span>}
         </NavLink>
@@ -90,7 +92,7 @@ const Sidebar = () => {
           )}
         </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 };
 
